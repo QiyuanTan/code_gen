@@ -10,7 +10,7 @@ class LLMsAdapter:
         raise NotImplementedError
 
     def update_token(self, token_delta):
-        raise NotImplementedError
+        self.token_count += token_delta
 
     def get_token(self):
         return self.token_count

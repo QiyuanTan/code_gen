@@ -4,11 +4,6 @@
 # @File : implementation
 import string
 
-import openai
-import zhipuai
-from transformers import AutoTokenizer, AutoModel
-from human_eval.data import read_problems
-
 from utils.LLMs.LLMsAdapter import LLMsAdapter
 from utils.prompts.Prompter import Prompter
 
@@ -21,20 +16,21 @@ def crop_string(input_string):
     return input_string[:index2]
 
 
-def self_planning(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter) -> string:
-    planning_prompt = planning(nlp_adapter, prompter, prompt)
+def self_planning(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
+    planning_prompt = planning(nlp_adapter, prompt, prompter)
     planning_prompt = planning_prompt[:planning_prompt.find('"""')] + '"""'
-    prompt = prompt[:-4] + planning_prompt
-    # print(prompt)
+    prompt = prompt[:-4] + 'Let’s think step by step.' + planning_prompt
+    # print(f"start of writing prompt \n{prompt} \n end of writing prompt")
     return crop_string(nlp_adapter.completion(prompt))
 
 
-def planning(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter) -> string:
+def planning(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
     prompt = prompter.PLANNING_PROMPT + prompt[:-4] + 'Let’s think step by step.'
+    # print(f"start of planning prompt \n{prompt} \n end of planning prompt")
     return nlp_adapter.completion(prompt)
 
 
-def self_collaboration(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter):
+def self_collaboration(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()):
     code = ''
     white_board = 'analyst:'
     white_board += (nlp_adapter.chat_completion(

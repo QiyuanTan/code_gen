@@ -14,7 +14,7 @@ def encrypt(s):
     """
 
 
-def check if last char is a letter(txt):
+def check_if_last_char_is_a_letter(txt):
     """
     Create a function that returns True if the last character of a given string is an alphabetical character and is not a
     part of a word, and False otherwise. Note: ”word” is a group of characters separated by space.
@@ -31,7 +31,7 @@ def check if last char is a letter(txt):
     """
 
 
-def file name check(file name):
+def file_name_check(file_name):
     """
     Create a function which takes a string representing a file’s name, and returns ’Yes’ if the the file’s name is valid,
     and returns ’No’ otherwise. A file’s name is considered to be valid if and only if all the following conditions are met:
@@ -47,7 +47,7 @@ def file name check(file name):
     """
 
 
-def fruit distribution(s,n):
+def fruit_distribution(s,n):
     """
     In this task, you will be given a string that represents a number of apples and oranges that are distributed in a
     basket of fruit this basket contains apples, oranges, and mango fruits. Given the string that represents the total number
@@ -66,7 +66,7 @@ def fruit distribution(s,n):
     """
 
 
-def prime fib(n: int):
+def prime_fib(n: int):
     """
     prime fib returns n-th number that is a Fibonacci number and it’s also prime.
     Examples:
@@ -100,7 +100,7 @@ def search(lst):
     """
 
 
-def compare one(a, b):
+def compare_one(a, b):
     """
     Create a function that takes integers, floats, or strings representing real numbers, and returns the larger variable
     in its given variable type. Return None if the values are equal. Note: If a real number is represented as a string, the
@@ -117,7 +117,7 @@ def compare one(a, b):
     """
 
 
-def sort even(l: list):
+def sort_even(l: list):
     """
     This function takes a list l and returns a list l’ such that l’ is identical to l in the odd indicies, while its values at
     the even indicies are equal to the values of the even indicies of l, but sorted.
@@ -132,4 +132,3 @@ def sort even(l: list):
     3. Return a new list that is identical to the original list in the odd indicies, and equal to the sorted even indices
     in the even indicies.
     """
-
