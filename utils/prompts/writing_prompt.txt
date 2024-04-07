@@ -12,6 +12,15 @@ def encrypt(s):
     2. Loop the input, find the latter bias letter in alphabet.
     3. Return result.
     """
+    d = 'abcdefghijklmnopqrstuvwxyz'
+    out = ''
+    for c in s:
+        if c in d:
+            out += d[(d.index(c)+2*2) % 26]
+        else:
+            out += c
+    return out
+
 
 
 def check_if_last_char_is_a_letter(txt):
@@ -29,6 +38,9 @@ def check_if_last_char_is_a_letter(txt):
     3. Split the given string into a list of words.
     4. Check if the length of the last word is equal to 1.
     """
+    check = txt.split(' ')[-1]
+    return True if len(check) == 1 and (97 <= ord(check.lower()) <= 122) else False
+
 
 
 def file_name_check(file_name):
@@ -45,6 +57,21 @@ def file_name_check(file_name):
     1. Check if the file name is valid according to the conditions.
     2. Return "Yes" if valid, otherwise return "NO".
     """
+    suf = ['txt', 'exe', 'dll']
+    lst = file_name.split(sep='.')
+    if len(lst) != 2:
+        return 'No'
+    if not lst[1] in suf:
+        return 'No'
+    if len(lst[0]) == 0:
+        return 'No'
+    if not lst[0][0].isalpha():
+        return 'No'
+    t = len([x for x in lst[0] if x.isdigit()])
+    if t > 3:
+        return 'No'
+    return 'Yes'
+
 
 
 def fruit_distribution(s,n):
@@ -64,23 +91,46 @@ def fruit_distribution(s,n):
     3. Deduct the sum from the total number of fruits.
     4. Return the number of mangoes.
     """
+    lis = list()
+    for i in s.split(' '):
+        if i.isdigit():
+            lis.append(int(i))
+    return n - sum(lis)
+
 
 
 def prime_fib(n: int):
     """
     prime fib returns n-th number that is a Fibonacci number that is also prime.
     Examples:
-    >>> prime fib(1) 2
-    >>> prime fib(2) 3
-    >>> prime fib(3) 5
-    >>> prime fib(4) 13
-    >>> prime fib(5) 89
+    >>> prime_fib(1) 2
+    >>> prime_fib(2) 3
+    >>> prime_fib(3) 5
+    >>> prime_fib(4) 13
+    >>> prime_fib(5) 89
     Let's think step by step.
     1. Create a function to check if a number is prime.
     2. Generate a Fibonacci sequence.
     3. Check if each number in the Fibonacci sequence is prime, decrement the counter.
     4. If the counter is 0, return the Fibonacci number.
     """
+    import math
+
+    def is_prime(p):
+        if p < 2:
+            return False
+        for k in range(2, min(int(math.sqrt(p)) + 1, p - 1)):
+            if p % k == 0:
+                return False
+        return True
+    f = [0, 1]
+    while True:
+        f.append(f[-1] + f[-2])
+        if is_prime(f[-1]):
+            n -= 1
+        if n == 0:
+            return f[-1]
+
 
 
 def search(lst):
@@ -98,6 +148,17 @@ def search(lst):
     3. Loop the input list, if frequency no lesser than the integer, set result.
     4. Return the result.
     """
+    frq = [0] * (max(lst) + 1)
+    for i in lst:
+        frq[i] += 1;
+
+    ans = -1
+    for i in range(1, len(frq)):
+        if frq[i] >= i:
+            ans = i
+
+    return ans
+
 
 
 def compare_one(a, b):
@@ -115,6 +176,12 @@ def compare_one(a, b):
     2. Check if inputs are strings and convert to floats.
     3. Compare the two inputs and return the larger one in its original data type.
     """
+    temp_a, temp_b = a, b
+    if isinstance(temp_a, str): temp_a = temp_a.replace(',','.')
+    if isinstance(temp_b, str): temp_b = temp_b.replace(',','.')
+    if float(temp_a) == float(temp_b): return None
+    return a if float(temp_a) > float(temp_b) else b
+
 
 
 def sort_even(l: list):
@@ -132,3 +199,13 @@ def sort_even(l: list):
     3. Return a new list that is identical to the original list in the odd indices, and equal to the sorted even indices
     in the even indices.
     """
+    evens = l[::2]
+    odds = l[1::2]
+    evens.sort()
+    ans = []
+    for e, o in zip(evens, odds):
+        ans.extend([e, o])
+    if len(evens) > len(odds):
+        ans.append(evens[-1])
+    return ans
+

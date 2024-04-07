@@ -3,20 +3,17 @@ from datetime import datetime
 from human_eval.data import write_jsonl, read_problems
 from tqdm import tqdm
 
-from utils.LLMs.ChatGLMAdapter import *
-from utils.LLMs.LLMsAdapter import LLMsAdapter
 from utils.LLMs.LocalLLMsAdapter import LocalLLMsAdapter
 from utils.implementation import *
 
 problems = read_problems()
 
 
-def self_planning_experiment(model_adapter: LLMsAdapter):
+def self_planning_experiment(model_adapter: LLMsAdapter, keys):
     model_adapter.recount_tokens()
     samples = []
 
     num_samples_per_task = 1
-    keys = list(problems.keys())[10:]
     total_iterations = num_samples_per_task * len(keys) * 3
 
     with tqdm(total=total_iterations, desc='Generating samples') as pbar:
@@ -31,12 +28,11 @@ def self_planning_experiment(model_adapter: LLMsAdapter):
     write_jsonl(f"{current_datetime}-{model_adapter}-selfplanning-{used_tokens}tokens.jsonl", samples)
 
 
-def control_group_experiment(model_adapter: LLMsAdapter):
+def control_group_experiment(model_adapter: LLMsAdapter, keys):
     model_adapter.recount_tokens()
     samples = []
 
     num_samples_per_task = 1
-    keys = list(problems.keys())[10:]
     total_iterations = num_samples_per_task * len(keys) * 3
 
     with tqdm(total=total_iterations, desc='Generating samples') as pbar:
@@ -52,6 +48,15 @@ def control_group_experiment(model_adapter: LLMsAdapter):
 
 
 if __name__ == '__main__':
+    keys_non_training = list(problems.keys())
+    keys_non_training.remove('HumanEval/37')
+    keys_non_training.remove('HumanEval/137')
+    keys_non_training.remove('HumanEval/69')
+    keys_non_training.remove('HumanEval/39')
+    keys_non_training.remove('HumanEval/67')
+    keys_non_training.remove('HumanEval/141')
+    keys_non_training.remove('HumanEval/134')
+    keys_non_training.remove('HumanEval/89')
     model = LocalLLMsAdapter('vicuna-7b-v1.5')
-    self_planning_experiment(model)
-    control_group_experiment(model)
+    self_planning_experiment(model, keys_non_training)
+    control_group_experiment(model, keys_non_training)

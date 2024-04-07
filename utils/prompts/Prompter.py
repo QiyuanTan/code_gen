@@ -4,13 +4,6 @@ from human_eval.data import read_problems
 class Prompter:
     def __init__(self):
         problems = read_problems()
-        keys = list(problems.keys())[:10]
-
-        self.ONE_SHOT_PROMPT = problems[keys[0]]['prompt'] + problems[keys[0]]['canonical_solution']
-
-        self.FIVE_SHOT_PROMPT = ''
-        for key in keys[:5]:
-            self.FIVE_SHOT_PROMPT += problems[key]['prompt'] + problems[key]['canonical_solution'] + '\n\n'
 
         with open('utils/prompts/planning_prompt.txt', 'r', encoding='utf-8') as file:
             # 2. 读取文件内容
@@ -31,3 +24,7 @@ class Prompter:
         with open('utils/prompts/tester.txt', 'r', encoding='utf-8') as file:
             # 2. 读取文件内容
             self.TESTER = file.read()
+
+        with open('utils/prompts/writing_prompt.txt', 'r', encoding='utf-8') as file:
+            # 2. 读取文件内容
+            self.WRITING_PROMPT = file.read()
