@@ -11,17 +11,17 @@ class Prompter:
             # 2. 读取文件内容
             self.TEAM_DESCRIPTION = file.read()
 
-        with open('utils/prompts/coder.txt', 'r', encoding='utf-8') as file:
+        with open('utils/prompts/developer.txt', 'r', encoding='utf-8') as file:
             # 2. 读取文件内容
-            self.CODER = file.read()
+            self.DEVELOPER = self.TEAM_DESCRIPTION + file.read()
 
         with open('utils/prompts/analyst.txt', 'r', encoding='utf-8') as file:
             # 2. 读取文件内容
-            self.ANALYST = file.read()
+            self.ANALYST = self.TEAM_DESCRIPTION + file.read()
 
         with open('utils/prompts/tester.txt', 'r', encoding='utf-8') as file:
             # 2. 读取文件内容
-            self.TESTER = file.read()
+            self.TESTER = self.TEAM_DESCRIPTION + file.read()
 
         with open('utils/prompts/writing_prompt.txt', 'r', encoding='utf-8') as file:
             # 2. 读取文件内容

@@ -16,24 +16,46 @@ def crop_string(input_string):
     return input_string[:index2]
 
 
-def self_planning(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
-    planning_prompt = planning(nlp_adapter, prompt, prompter)
+def self_planning(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
+    planning_prompt = planning(llm_adapter, prompt, prompter)
     planning_prompt = planning_prompt[:planning_prompt.find('"""')] + '"""'
     prompt = prompter.WRITING_PROMPT + prompt[:-4] + 'Let’s think step by step.' + planning_prompt
     # print(f"start of writing prompt \n{prompt} \n end of writing prompt")
-    return crop_string(nlp_adapter.completion(prompt))
+    return crop_string(llm_adapter.completion(prompt))
 
 
-def planning(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
+def planning(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
     prompt = prompter.PLANNING_PROMPT + prompt[:-4] + 'Let’s think step by step.'
     # print(f"start of planning prompt \n{prompt} \n end of planning prompt")
-    return nlp_adapter.completion(prompt)
+    return llm_adapter.completion(prompt)
 
 
-def self_collaboration(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()):
+def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()):
+    analyst = Conversation(llm_adapter, prompter.ANALYST)
+    developer = Conversation(llm_adapter, prompter.DEVELOPER)
+    tester = Conversation(llm_adapter, prompter.TESTER)
     code = ''
-    white_board = 'analyst:'
-    white_board += (nlp_adapter.chat_completion(
-        prompter.TEAM_DESCRIPTION +
-        f"\n the user's requirement is to complete the following function{prompt}" +
-        prompter.ANALYST))
+
+    user_requirements = {'role': 'user',
+                         'content': f"please write a complete implementation for this function:\n {prompt}"}
+    messages = [user_requirements,
+                {'role': 'system', 'content': 'Analyst: ' + analyst.converse(user_requirements)}]
+    for i in range(3):
+        code = developer.converse(messages)
+        messages.append({'role': 'system', 'content': f"The developer's code is:\n{code}"})
+        feedback = tester.converse(messages)
+        if 'No problems found' in feedback.lower():
+            break
+        messages.append({'role': 'system', 'content': f"The test's feedback is:\n{feedback}"})
+
+    return code
+
+
+class Conversation:
+    def __init__(self, llm_adapter: LLMsAdapter, role_prompt):
+        self.llm_adapter = llm_adapter
+        self.role_prompt = role_prompt
+
+    def converse(self, prompt):
+        results = self.llm_adapter.chat_completion([self.role_prompt] + prompt)
+        return results
