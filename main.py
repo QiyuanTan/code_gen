@@ -57,6 +57,6 @@ if __name__ == '__main__':
     keys_non_training.remove('HumanEval/141')
     keys_non_training.remove('HumanEval/134')
     keys_non_training.remove('HumanEval/89')
-    model = LocalLLMsAdapter('vicuna-7b-v1.5')
+    model = LocalLLMsAdapter('vicuna-13b-v1.5')
     self_planning_experiment(model, keys_non_training)
     control_group_experiment(model, keys_non_training)
