@@ -19,7 +19,7 @@ def crop_string(input_string):
 def self_planning(nlp_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
     planning_prompt = planning(nlp_adapter, prompt, prompter)
     planning_prompt = planning_prompt[:planning_prompt.find('"""')] + '"""'
-    prompt = Prompter.WRITING_PROMPT + prompt[:-4] + 'Let’s think step by step.' + planning_prompt
+    prompt = prompter.WRITING_PROMPT + prompt[:-4] + 'Let’s think step by step.' + planning_prompt
     # print(f"start of writing prompt \n{prompt} \n end of writing prompt")
     return crop_string(nlp_adapter.completion(prompt))
 

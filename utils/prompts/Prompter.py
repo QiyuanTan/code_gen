@@ -3,8 +3,6 @@ from human_eval.data import read_problems
 
 class Prompter:
     def __init__(self):
-        problems = read_problems()
-
         with open('utils/prompts/planning_prompt.txt', 'r', encoding='utf-8') as file:
             # 2. 读取文件内容
             self.PLANNING_PROMPT = file.read()
