@@ -7,7 +7,7 @@ from utils.LLMs.LLMsAdapter import LLMsAdapter
 class ZhipuModelsAdapter(LLMsAdapter):
 
     def __init__(self, model_name, api_key='2c700bf3ba6419b8ea37f0602baf527c.7vBfCGkpob2Y8Qzr'):
-        super().__init__(model_name)  # TODO: 确认模型名称
+        super().__init__(model_name)
         zhipuai.api_key = api_key
 
     def completion(self, prompt, max_tokens=100, max_length=300, top_p=0.9, temperature=0.0):
@@ -31,6 +31,20 @@ class ZhipuModelsAdapter(LLMsAdapter):
         )
         self.update_token(response['usage']['total_tokens'])
         return response['data']['choices'][0]['content']
+
+
+class CharactorGLMAdapter(ZhipuModelsAdapter):
+    def __init__(self):
+        super().__init__("characterglm")  # TODO: 检查模型名称
+
+    def get_charactor(self, role_prompt):
+        pass
+
+    def completion(self, prompt, max_tokens=100, max_length=300, top_p=0.9, temperature=0.0):
+        raise NotImplementedError('CharactorGLM does not support completion')
+
+    class Charactor:
+        pass
 
 
 class CodeGeeXAdapter(LLMsAdapter):

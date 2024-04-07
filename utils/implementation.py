@@ -1,7 +1,7 @@
 # -*- coding = utf-8 -*-
 # @Time : 2023/8/31 23:36
-# @Author : Tan Qiyuan
-# @File : implementation
+# @Author: Tan Qiyuan
+# @File: implementation
 import string
 
 from utils.LLMs.LLMsAdapter import LLMsAdapter
@@ -31,9 +31,9 @@ def planning(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) 
 
 
 def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()):
-    analyst = Conversation(llm_adapter, prompter.ANALYST)
-    developer = Conversation(llm_adapter, prompter.DEVELOPER)
-    tester = Conversation(llm_adapter, prompter.TESTER)
+    analyst = llm_adapter.get_charactor(prompter.ANALYST)
+    developer = llm_adapter.get_charactor(prompter.DEVELOPER)
+    tester = llm_adapter.get_charactor(prompter.TESTER)
     code = ''
 
     user_requirements = {'role': 'user',
@@ -47,15 +47,6 @@ def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Pr
         if 'No problems found' in feedback.lower():
             break
         messages.append({'role': 'system', 'content': f"The test's feedback is:\n{feedback}"})
+        print(messages)
 
     return code
-
-
-class Conversation:
-    def __init__(self, llm_adapter: LLMsAdapter, role_prompt):
-        self.llm_adapter = llm_adapter
-        self.role_prompt = role_prompt
-
-    def converse(self, prompt):
-        results = self.llm_adapter.chat_completion([self.role_prompt] + prompt)
-        return results
