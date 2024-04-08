@@ -25,7 +25,7 @@ def self_planning_experiment(model_adapter: LLMsAdapter, keys):
 
     used_tokens = model_adapter.get_token()
     current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    write_jsonl(f"{current_datetime}-{model_adapter}-selfplanning-{used_tokens}tokens.jsonl", samples)
+    write_jsonl(f"{current_datetime}-{model_adapter}-self-planning-{used_tokens}tokens.jsonl", samples)
 
 
 def control_group_experiment(model_adapter: LLMsAdapter, keys):
@@ -49,14 +49,14 @@ def control_group_experiment(model_adapter: LLMsAdapter, keys):
 
 if __name__ == '__main__':
     keys_non_training = list(problems.keys())
-    keys_non_training.remove('HumanEval/37')
-    keys_non_training.remove('HumanEval/137')
-    keys_non_training.remove('HumanEval/69')
-    keys_non_training.remove('HumanEval/39')
-    keys_non_training.remove('HumanEval/67')
-    keys_non_training.remove('HumanEval/141')
-    keys_non_training.remove('HumanEval/134')
-    keys_non_training.remove('HumanEval/89')
+    # keys_non_training.remove('HumanEval/37')
+    # keys_non_training.remove('HumanEval/137')
+    # keys_non_training.remove('HumanEval/69')
+    # keys_non_training.remove('HumanEval/39')
+    # keys_non_training.remove('HumanEval/67')
+    # keys_non_training.remove('HumanEval/141')
+    # keys_non_training.remove('HumanEval/134')
+    # keys_non_training.remove('HumanEval/89')
     model = LocalLLMsAdapter('vicuna-13b-v1.5')
     self_planning_experiment(model, keys_non_training)
     control_group_experiment(model, keys_non_training)

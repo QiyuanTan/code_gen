@@ -3,7 +3,7 @@ from utils.LLMs.OpenaiLLMsAdapter import OpenaiLLMsAdapter
 
 class LocalLLMsAdapter(OpenaiLLMsAdapter):
 
-    def __init__(self, model_name, api_base = "http://localhost:8000/v1"):
+    def __init__(self, model_name, api_base="http://localhost:8000/v1"):
         super().__init__(model_name=model_name)
         self.api_base = api_base
 

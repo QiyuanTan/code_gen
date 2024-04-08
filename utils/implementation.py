@@ -44,7 +44,7 @@ def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Pr
         code = developer.converse(messages)
         messages.append({'role': 'system', 'content': f"The developer's code is:\n{code}"})
         feedback = tester.converse(messages)
-        if 'No problems found' in feedback.lower():
+        if 'no problems found' in feedback.lower():
             break
         messages.append({'role': 'system', 'content': f"The test's feedback is:\n{feedback}"})
         print(messages)
