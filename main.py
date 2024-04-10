@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from human_eval.data import write_jsonl, read_problems
+from human_eval.data import write_jsonl, read_problems, HUMAN_EVAL
 from human_eval.evaluate_functional_correctness import entry_point
+from human_eval.evaluation import evaluate_functional_correctness
 from tqdm import tqdm
 
 from utils.LLMs.LocalLLMsAdapter import LocalLLMsAdapter
@@ -29,7 +30,13 @@ def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name, completi
     file_name = f"{current_datetime}-{model_adapter}-{experiment_name}-{used_tokens}tokens.jsonl"
     write_jsonl(file_name, samples)
 
-    entry_point(file_name)
+    k = "1,10,100"
+    k = list(map(int, k.split(",")))
+    evaluate_functional_correctness(file_name,
+                                    k=k,
+                                    n_workers=10,
+                                    timeout=3.0,
+                                    problem_file=HUMAN_EVAL, )
 
 
 def completion_for_completion_models(model_adapter, prompt):
