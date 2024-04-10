@@ -3,10 +3,10 @@ class LLMsAdapter:
         self.token_count = 0
         self.model_name = model_name
 
-    def completion(self, prompt, max_tokens=100):
+    def completion(self, prompt, max_tokens=100) -> str:
         raise NotImplementedError
 
-    def chat_completion(self, prompt, max_tokens=100):
+    def chat_completion(self, prompt, max_tokens=100) -> str:
         raise NotImplementedError
 
     def update_token(self, token_delta):

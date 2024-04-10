@@ -38,7 +38,7 @@ class CharactorGLMAdapter(ZhipuModelsAdapter):
         super().__init__("characterglm")  # TODO: 检查模型名称
 
     def get_charactor(self, role_prompt):
-        pass
+        raise NotImplementedError
 
     def completion(self, prompt, max_tokens=100, max_length=300, top_p=0.9, temperature=0.0):
         raise NotImplementedError('CharactorGLM does not support completion')

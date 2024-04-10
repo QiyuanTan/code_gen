@@ -40,6 +40,7 @@ def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Pr
                          'content': f"please write a complete implementation for this function:\n {prompt}"}
     messages = [user_requirements,
                 {'role': 'system', 'content': 'Analyst: ' + analyst.converse(user_requirements)}]
+
     for i in range(3):
         code = developer.converse(messages)
         messages.append({'role': 'system', 'content': f"The developer's code is:\n{code}"})
