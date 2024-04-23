@@ -18,8 +18,8 @@ class LLMsAdapter:
     def recount_tokens(self):
         self.token_count = 0
 
-    def get_charactor(self, role_prompt):
-        return self.Charactor(self, role_prompt)
+    def get_charactor(self, role_prompt, role):
+        return self.Charactor(self, role_prompt, role)
 
     def get_model_name(self):
         return self.model_name
@@ -28,9 +28,10 @@ class LLMsAdapter:
         return self.model_name
 
     class Charactor:
-        def __init__(self, llm_adapter, role_prompt):
+        def __init__(self, llm_adapter, role_prompt, role):
             self.llm_adapter = llm_adapter
             self.role_prompt = {'role': 'system', 'content': role_prompt}
+            self.role = role
 
         def converse(self, prompt):
             results = self.llm_adapter.chat_completion([self.role_prompt] + prompt)

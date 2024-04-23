@@ -31,9 +31,9 @@ def planning(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) 
 
 
 def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()):
-    analyst = llm_adapter.get_charactor(prompter.ANALYST)
-    developer = llm_adapter.get_charactor(prompter.DEVELOPER)
-    tester = llm_adapter.get_charactor(prompter.TESTER)
+    analyst = llm_adapter.get_charactor(prompter.ANALYST, 'analyst')
+    developer = llm_adapter.get_charactor(prompter.DEVELOPER, 'developer')
+    tester = llm_adapter.get_charactor(prompter.TESTER, 'tester')
     code = ''
 
     user_requirements = {'role': 'user',
@@ -48,6 +48,6 @@ def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Pr
         if 'no problems found' in feedback.lower():
             break
         messages.append({'role': 'user', 'content': f"The test's feedback is:\n{feedback}"})
-        print(messages)
+        # print(messages)
 
     return code
