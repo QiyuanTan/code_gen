@@ -23,7 +23,10 @@ class OpenaiLLMsAdapter(LLMsAdapter):
             top_p=top_p,
             max_tokens=max_length
         )
-        self.update_token(chat.usage.total_tokens)
+        try:
+            self.update_token(chat.usage.total_tokens)
+        except AttributeError:
+            self.update_token(-1)
         return chat.choices[0].text
 
     def chat_completion(self,
@@ -41,5 +44,8 @@ class OpenaiLLMsAdapter(LLMsAdapter):
             top_p=top_p,
             max_tokens=max_length
         )
-        self.update_token(chat.usage.total_tokens)
+        try:
+            self.update_token(chat.usage.total_tokens)
+        except AttributeError:
+            self.update_token(-1)
         return chat.choices[0].message.content

@@ -19,8 +19,8 @@ def crop_string(input_string):
 def self_planning(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> string:
     planning_prompt = planning(llm_adapter, prompt, prompter)
     planning_prompt = planning_prompt[:planning_prompt.find('"""')] + '"""'
-    prompt = prompter.WRITING_PROMPT + prompt[:-4] + 'Let’s think step by step.' + planning_prompt
-    # print(f"start of writing prompt \n{prompt} \n end of writing prompt")
+    prompt = prompt[:-4] + 'Let’s think step by step.' + planning_prompt
+    print(f"start of writing prompt \n{prompt} \n end of writing prompt")
     return crop_string(llm_adapter.completion(prompt))
 
 
@@ -39,15 +39,15 @@ def self_collaboration(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Pr
     user_requirements = {'role': 'user',
                          'content': f"please write a complete implementation for this function:\n {prompt}"}
     messages = [user_requirements,
-                {'role': 'system', 'content': 'Analyst: ' + analyst.converse(user_requirements)}]
+                {'role': 'user', 'content': 'Analyst: ' + analyst.converse([user_requirements])}]
 
     for i in range(3):
         code = developer.converse(messages)
-        messages.append({'role': 'system', 'content': f"The developer's code is:\n{code}"})
+        messages.append({'role': 'user', 'content': f"The developer's code is:\n{code}"})
         feedback = tester.converse(messages)
         if 'no problems found' in feedback.lower():
             break
-        messages.append({'role': 'system', 'content': f"The test's feedback is:\n{feedback}"})
+        messages.append({'role': 'user', 'content': f"The test's feedback is:\n{feedback}"})
         print(messages)
 
     return code

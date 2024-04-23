@@ -30,7 +30,7 @@ class LLMsAdapter:
     class Charactor:
         def __init__(self, llm_adapter, role_prompt):
             self.llm_adapter = llm_adapter
-            self.role_prompt = role_prompt
+            self.role_prompt = {'role': 'system', 'content': role_prompt}
 
         def converse(self, prompt):
             results = self.llm_adapter.chat_completion([self.role_prompt] + prompt)
