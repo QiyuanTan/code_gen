@@ -5,8 +5,7 @@ from human_eval.data import write_jsonl, read_problems, HUMAN_EVAL
 from human_eval.evaluation import evaluate_functional_correctness
 from tqdm import tqdm
 
-from utils.LLMs.ChatGLMAdapter import ZhipuModelsAdapter, CharactorGLMAdapter
-from utils.LLMs.LocalLLMsAdapter import LocalLLMsAdapter
+from utils.LLMs.ChatGLMAdapter import ZhipuModelsAdapter
 from utils.implementation import *
 
 problems = read_problems()
