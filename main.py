@@ -49,22 +49,21 @@ def completion_for_completion_models(llm_adapter, prompt):
 
 
 def completion_for_chat_models(llm_adapter: LLMsAdapter, prompt):
-    return llm_adapter.chat_completion([{'role': 'user',
-                                         'content': 'Please write a complete implementation for this function. '
-                                                    'Remember, do not include the function header, and do not write '
-                                                    'anything but the code for implementation. ' + prompt}])
+    return extract_function_body(llm_adapter.chat_completion([{'role': 'user',
+                                                               'content': 'Please write a complete implementation for '
+                                                                          'this function. Remember, do not include '
+                                                                          'the function header, and do not write '
+                                                                          'anything but the code for implementation. '
+                                                                          + prompt}]))
 
 
 if __name__ == '__main__':
     problem_keys = list(problems.keys())
     glm3 = ZhipuModelsAdapter('glm-3-Turbo')
-    charglm = CharactorGLMAdapter()
-
-    # generate_samples(charglm, problem_keys, "self_collaboration", self_collaboration)
-    # generate_samples(charglm, problem_keys, "direct_chat", completion_for_chat_models)
+    glm4 = ZhipuModelsAdapter('glm-4')
 
     generate_samples(glm3, problem_keys, "self_collaboration", self_collaboration)
     generate_samples(glm3, problem_keys, "direct_chat", completion_for_chat_models)
 
-    # generate_samples(charglm, problem_keys, "self_planning", self_planning)
-    # generate_samples(charglm, problem_keys, "direct_completion", completion_for_completion_models)
+    generate_samples(glm4, problem_keys, "self_collaboration", self_collaboration)
+    generate_samples(glm4, problem_keys, "direct_chat", completion_for_chat_models)
