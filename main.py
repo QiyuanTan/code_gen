@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 from human_eval.data import write_jsonl, read_problems, HUMAN_EVAL
@@ -15,15 +16,12 @@ def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name, completi
     model_adapter.recount_tokens()
     samples = []
 
-    total_iterations = num_samples_per_task * len(keys) * 3
+    total_iterations = num_samples_per_task * len(keys)
 
-    with tqdm(total=total_iterations, desc='Generating samples') as pbar:
+    with ThreadPoolExecutor(max_workers=5) as executor, tqdm(total=total_iterations, desc='Generating samples') as pbar:
         for _ in range(num_samples_per_task):
             for task_id in keys:
-                samples.append(
-                    dict(task_id=task_id, completion=completion(prompt=problems[task_id]["prompt"],
-                                                                llm_adapter=model_adapter)))
-                pbar.update(1)
+                executor.submit(add_sample, samples, task_id, completion, model_adapter, pbar)
 
     used_tokens = model_adapter.get_token()
     current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -39,15 +37,22 @@ def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name, completi
                                     problem_file=HUMAN_EVAL)
 
 
+def add_sample(samples, task_id, completion, model_adapter, pbar):
+    samples.append(dict(task_id=task_id,
+                        completion=completion(prompt=problems[task_id]["prompt"],
+                                              llm_adapter=model_adapter)))
+    pbar.update(1)
+
+
 def completion_for_completion_models(llm_adapter, prompt):
     return llm_adapter.completion(prompt)
 
 
 def completion_for_chat_models(llm_adapter: LLMsAdapter, prompt):
     return llm_adapter.chat_completion([{'role': 'user',
-                                        'content': 'Please write a complete implementation for this function. '
-                                                   'Remember, do not include the function header, and do not write '
-                                                   'anything but the code for implementation. ' + prompt}])
+                                         'content': 'Please write a complete implementation for this function. '
+                                                    'Remember, do not include the function header, and do not write '
+                                                    'anything but the code for implementation. ' + prompt}])
 
 
 if __name__ == '__main__':

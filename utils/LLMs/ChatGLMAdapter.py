@@ -32,8 +32,13 @@ class ZhipuModelsAdapter(LLMsAdapter):
             temperature=temperature+0.1,
             max_length=max_length
         )
-        self.update_token(response['data']['usage']['total_tokens'])
-        return response['data']['choices'][0]['content']
+        try:
+            # print(response)
+            self.update_token(response['data']['usage']['total_tokens'])
+            return response['data']['choices'][0]['content']
+        except KeyError:
+            print(response)
+            raise Exception(response['msg'])
 
 
 class CharactorGLMAdapter(ZhipuModelsAdapter):
