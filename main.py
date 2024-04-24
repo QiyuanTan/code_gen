@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from datetime import datetime
 
 from human_eval.data import write_jsonl, read_problems, HUMAN_EVAL
@@ -18,9 +18,12 @@ def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name, completi
     total_iterations = num_samples_per_task * len(keys)
 
     with ThreadPoolExecutor(max_workers=5) as executor, tqdm(total=total_iterations, desc='Generating samples') as pbar:
+        threads = []
         for _ in range(num_samples_per_task):
             for task_id in keys:
-                executor.submit(add_sample, samples, task_id, completion, model_adapter, pbar)
+                threads.append(executor.submit(add_sample, samples, task_id, completion, model_adapter, pbar))
+
+    wait(threads)
 
     used_tokens = model_adapter.get_token()
     current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
