@@ -4,7 +4,7 @@ class Charactor:
         self.role_prompt = {'role': 'system', 'content': role_prompt}
         self.role = role
 
-    def converse(self, prompt):
+    def converse(self, prompt: list[dict[str, str]]):
         results = self.llm_adapter.chat_completion([self.role_prompt] + prompt)
         return results
 
@@ -17,7 +17,7 @@ class LLMsAdapter:
     def completion(self, prompt: str) -> str:
         raise NotImplementedError
 
-    def chat_completion(self, prompt: str) -> str:
+    def chat_completion(self, prompt: list[dict[str, str]]) -> str:
         raise NotImplementedError
 
     def update_token(self, token_delta: str):
