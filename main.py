@@ -54,7 +54,7 @@ def completion_for_completion_models(llm_adapter, prompt):
 
 
 def completion_for_chat_models(llm_adapter: LLMsAdapter, prompt):
-    return extract_function(llm_adapter.chat_completion([{'role': 'user',
+    return extract_function_body(llm_adapter.chat_completion([{'role': 'user',
                                                           'content': 'Please write a complete implementation for '
                                                                      'this function. Remember, do not include '
                                                                      'the function header, and do not write '
@@ -71,8 +71,10 @@ if __name__ == '__main__':
     # generate_samples(codegeex, problem_keys, "self_panning", self_planning, max_workers=1)
     # generate_samples(codegeex, problem_keys, "dirct_completion", completion_for_completion_models, max_workers=1)
 
-    generate_samples(glm3, problem_keys, "self_collaboration", self_collaboration)
+    generate_samples(glm3, problem_keys, "self_collaboration", self_collaboration, max_workers=1)
     # generate_samples(glm3, problem_keys, "direct_chat", completion_for_chat_models)
 
     # generate_samples(glm4, problem_keys, "self_collaboration", self_collaboration)
     # generate_samples(glm4, problem_keys, "direct_chat", completion_for_chat_models)
+
+    # process_json_file("2024-04-24_16-38-50-glm-4-self_collaboration-1114253tokens.jsonl")
