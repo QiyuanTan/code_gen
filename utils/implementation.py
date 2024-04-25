@@ -29,7 +29,7 @@ def self_planning(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompte
     planning_prompt: str = planning(llm_adapter, prompt, prompter)
     planning_prompt = planning_prompt[:planning_prompt.find('"""')] + '"""'
     prompt = prompt[:-4] + 'Let’s think step by step.' + planning_prompt
-    print(f"start of writing prompt \n{prompt} \n end of writing prompt")
+    # print(f"start of writing prompt \n{prompt} \n end of writing prompt")
     return crop_string(llm_adapter.completion(prompt))
 
 
@@ -45,17 +45,17 @@ def self_collaboration(llm_adapter: LLMsAdapter, prompt: str, prompter: Prompter
     code: str = ''
 
     user_requirements: dict[str, str] = {'role': 'user',
-                                         'content': f"please write a complete implementation for "
+                                         'content': f"The user requests the team to write a complete implementation for "
                                                     f"this function:\n {prompt}"}
     messages: list[dict[str, str]] = [user_requirements,
-                                      {'role': 'user', 'content': 'Analyst: ' + analyst.converse([user_requirements])}]
+                                      {'role': 'user', 'content': f'Analyst: {analyst.converse([user_requirements])}'}]
 
     for i in range(3):
         code = extract_function_body((developer.converse(messages)))
         messages.append({'role': 'user', 'content': f"The developer's code is:\n{code}"})
         feedback = tester.converse(messages)
+        print(messages)
         if 'no problems found' in feedback.lower():
             break
-        messages.append({'role': 'user', 'content': f"The test's feedback is:\n{feedback}"})
-
+        messages.append({'role': 'user', 'content': f"The tester's feedback is:\n{feedback}"})
     return code

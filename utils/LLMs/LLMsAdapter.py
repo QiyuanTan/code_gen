@@ -4,7 +4,7 @@ class Charactor:
         self.role_prompt = {'role': 'system', 'content': role_prompt}
         self.role = role
 
-    def converse(self, prompt: list[dict[str, str]]):
+    def converse(self, prompt: list[dict[str, str]]) -> str:
         results = self.llm_adapter.chat_completion([self.role_prompt] + prompt)
         return results
 

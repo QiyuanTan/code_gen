@@ -5,25 +5,28 @@ from human_eval.data import write_jsonl, read_problems, HUMAN_EVAL
 from human_eval.evaluation import evaluate_functional_correctness
 from tqdm import tqdm
 
-from utils.LLMs.ChatGLMAdapter import ZhipuModelsAdapter
+from utils.LLMs.ChatGLMAdapter import ZhipuModelsAdapter, CodeGeeXAdapter
 from utils.implementation import *
 
 problems = read_problems()
 
 
-def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name, completion, num_samples_per_task=1):
+def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name,
+                     completion, num_samples_per_task=1, max_workers=5):
     model_adapter.recount_tokens()
     samples = []
 
     total_iterations = num_samples_per_task * len(keys)
 
-    with ThreadPoolExecutor(max_workers=5) as executor, tqdm(total=total_iterations, desc='Generating samples') as pbar:
-        threads = []
+    with ThreadPoolExecutor(max_workers=max_workers) as executor, \
+            tqdm(total=total_iterations, desc=f'Generating samples: {model_adapter}-{experiment_name}') as pbar:
         for _ in range(num_samples_per_task):
             for task_id in keys:
-                threads.append(executor.submit(add_sample, samples, task_id, completion, model_adapter, pbar))
+                executor.submit(add_sample, samples, task_id, completion, model_adapter, pbar)
 
-    wait(threads)
+        executor.shutdown(wait=True)
+
+    samples.sort(key=lambda i: i['task_id'].strip())
 
     used_tokens = model_adapter.get_token()
     current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -32,11 +35,11 @@ def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name, completi
 
     k = "1,10,100"
     k = list(map(int, k.split(",")))
-    evaluate_functional_correctness(file_name,
-                                    k=k,
-                                    n_workers=10,
-                                    timeout=3.0,
-                                    problem_file=HUMAN_EVAL)
+    print(evaluate_functional_correctness(file_name,
+                                          k=k,
+                                          n_workers=10,
+                                          timeout=3.0,
+                                          problem_file=HUMAN_EVAL))
 
 
 def add_sample(samples, task_id, completion, model_adapter, pbar):
@@ -61,8 +64,12 @@ def completion_for_chat_models(llm_adapter: LLMsAdapter, prompt):
 
 if __name__ == '__main__':
     problem_keys = list(problems.keys())
-    glm3 = ZhipuModelsAdapter('glm-3-Turbo')
-    glm4 = ZhipuModelsAdapter('glm-4')
+    glm3 = ZhipuModelsAdapter('glm-3-Turbo', api_key='0b4dfa49fd18b4b01a9bdaed106e1a8a.Hv5dwBnO1rp8k7P0')
+    glm4 = ZhipuModelsAdapter('glm-4', api_key='0b4dfa49fd18b4b01a9bdaed106e1a8a.Hv5dwBnO1rp8k7P0')
+    codegeex = CodeGeeXAdapter()
+
+    generate_samples(codegeex, problem_keys, "self_panning", self_planning, max_workers=1)
+    generate_samples(codegeex, problem_keys, "dirct_completion", completion_for_completion_models, max_workers=1)
 
     generate_samples(glm3, problem_keys, "self_collaboration", self_collaboration)
     generate_samples(glm3, problem_keys, "direct_chat", completion_for_chat_models)
