@@ -2,6 +2,7 @@
 # @Time : 2023/8/31 23:36
 # @Author: Tan Qiyuan
 # @File: implementation
+import ast
 import re
 
 from utils.LLMs.LLMsAdapter import LLMsAdapter, Charactor
@@ -16,13 +17,33 @@ def crop_string(input_string):
     return input_string[:index2]
 
 
-def extract_function_body(function_string):
-    pattern = r"def\s+\w+\s*\([^)]*\)\s*:\s*([\s\S]*?)(?=def|\Z)"
-    match = re.search(pattern, function_string)
+def extract_function(text):
+    # 使用正则表达式找到以"def"开始，后面跟着函数名的部分
+    pattern = r"```python\s+(.*?)\s+```"
+    match = re.search(pattern, text, re.DOTALL)
     if match:
-        return match.group(1).strip()
+        function_block = match.group(1).strip()
+        # 再次使用正则表达式找到以"def"开始的部分，以定位函数体
+        function_start = function_block.find("def ")
+        if function_start != -1:
+            return extract_function_body((function_block[function_start:]))
+    return text
+
+
+def extract_function_body(func_str):
+    parsed_ast = ast.parse(func_str)
+    function_defs = [node for node in parsed_ast.body if isinstance(node, ast.FunctionDef)]
+    if len(function_defs) == 1:
+        body = function_defs[0].body
+        original_source_lines = func_str.splitlines()
+        start_line = body[0].lineno - 1
+        end_line = body[-1].end_lineno
+        body_lines = original_source_lines[start_line:end_line]
+        body_str = '\n'.join(body_lines)
+
+        return body_str
     else:
-        return function_string
+        return "Error: Input should contain exactly one function definition."
 
 
 def self_planning(llm_adapter: LLMsAdapter, prompt, prompter: Prompter = Prompter()) -> str:
@@ -45,13 +66,14 @@ def self_collaboration(llm_adapter: LLMsAdapter, prompt: str, prompter: Prompter
     code: str = ''
 
     user_requirements: dict[str, str] = {'role': 'user',
-                                         'content': f"The user requests the team to write a complete implementation for "
-                                                    f"this function:\n {prompt}"}
+                                         'content': f"The user requests the team to write a complete implementation "
+                                                    f"for this function:\n {prompt}"}
     messages: list[dict[str, str]] = [user_requirements,
-                                      {'role': 'user', 'content': f'Analyst: {analyst.converse([user_requirements])}'}]
+                                      {'role': 'user', 'content': f'The analyst says: '
+                                                                  f'{analyst.converse([user_requirements])}'}]
 
     for i in range(3):
-        code = extract_function_body((developer.converse(messages)))
+        code = extract_function((developer.converse(messages)))
         messages.append({'role': 'user', 'content': f"The developer's code is:\n{code}"})
         feedback = tester.converse(messages)
         print(messages)

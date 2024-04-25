@@ -26,7 +26,7 @@ def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name,
 
         executor.shutdown(wait=True)
 
-    samples.sort(key=lambda i: i['task_id'].strip())
+    samples.sort(key=lambda i: int(i['task_id'].split('/')[1]))
 
     used_tokens = model_adapter.get_token()
     current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -54,25 +54,25 @@ def completion_for_completion_models(llm_adapter, prompt):
 
 
 def completion_for_chat_models(llm_adapter: LLMsAdapter, prompt):
-    return extract_function_body(llm_adapter.chat_completion([{'role': 'user',
-                                                               'content': 'Please write a complete implementation for '
-                                                                          'this function. Remember, do not include '
-                                                                          'the function header, and do not write '
-                                                                          'anything but the code for implementation. '
-                                                                          + prompt}]))
+    return extract_function(llm_adapter.chat_completion([{'role': 'user',
+                                                          'content': 'Please write a complete implementation for '
+                                                                     'this function. Remember, do not include '
+                                                                     'the function header, and do not write '
+                                                                     'anything but the code for implementation. '
+                                                                     + prompt}]))
 
 
 if __name__ == '__main__':
     problem_keys = list(problems.keys())
     glm3 = ZhipuModelsAdapter('glm-3-Turbo', api_key='0b4dfa49fd18b4b01a9bdaed106e1a8a.Hv5dwBnO1rp8k7P0')
     glm4 = ZhipuModelsAdapter('glm-4', api_key='0b4dfa49fd18b4b01a9bdaed106e1a8a.Hv5dwBnO1rp8k7P0')
-    codegeex = CodeGeeXAdapter()
+    # codegeex = CodeGeeXAdapter()
 
-    generate_samples(codegeex, problem_keys, "self_panning", self_planning, max_workers=1)
-    generate_samples(codegeex, problem_keys, "dirct_completion", completion_for_completion_models, max_workers=1)
+    # generate_samples(codegeex, problem_keys, "self_panning", self_planning, max_workers=1)
+    # generate_samples(codegeex, problem_keys, "dirct_completion", completion_for_completion_models, max_workers=1)
 
     generate_samples(glm3, problem_keys, "self_collaboration", self_collaboration)
-    generate_samples(glm3, problem_keys, "direct_chat", completion_for_chat_models)
+    # generate_samples(glm3, problem_keys, "direct_chat", completion_for_chat_models)
 
-    generate_samples(glm4, problem_keys, "self_collaboration", self_collaboration)
-    generate_samples(glm4, problem_keys, "direct_chat", completion_for_chat_models)
+    # generate_samples(glm4, problem_keys, "self_collaboration", self_collaboration)
+    # generate_samples(glm4, problem_keys, "direct_chat", completion_for_chat_models)
