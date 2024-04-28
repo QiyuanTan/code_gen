@@ -10,8 +10,7 @@ class OpenaiLLMsAdapter(LLMsAdapter):
 
     def completion(self,
                    prompt,
-                   max_tokens=100,
-                   max_length=300,
+                   max_tokens=300,
                    top_p=0.9,
                    temperature=0.0,
                    api_base="https://api.openai.com/v1"):
@@ -21,7 +20,7 @@ class OpenaiLLMsAdapter(LLMsAdapter):
             prompt=prompt,
             temperature=temperature,
             top_p=top_p,
-            max_tokens=max_length
+            max_tokens=max_tokens
         )
         try:
             self.update_token(chat.usage.total_tokens)
@@ -31,18 +30,16 @@ class OpenaiLLMsAdapter(LLMsAdapter):
 
     def chat_completion(self,
                         messages,
-                        max_tokens=100,
-                        max_length=300,
                         top_p=0.9,
                         temperature=0.0,
-                        api_base="https://api.openai.com/v1"):
+                        api_base="https://api.openai.com/v1",
+                        **kwargs):
         openai.api_base = api_base
         chat = openai.ChatCompletion.create(
             model=self.get_model_name(),
             messages=messages,
             temperature=temperature,
             top_p=top_p,
-            max_tokens=max_length
         )
         try:
             self.update_token(chat.usage.total_tokens)

@@ -11,7 +11,7 @@ class Charactor:
 
 class LLMsAdapter:
     def __init__(self, model_name):
-        self.token_count = 0
+        self.token_count: int = 0
         self.model_name = model_name
 
     def completion(self, prompt: str) -> str:
@@ -20,7 +20,7 @@ class LLMsAdapter:
     def chat_completion(self, prompt: list[dict[str, str]]) -> str:
         raise NotImplementedError
 
-    def update_token(self, token_delta: str):
+    def update_token(self, token_delta: int):
         self.token_count += token_delta
 
     def get_token(self) -> int:

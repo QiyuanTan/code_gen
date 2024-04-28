@@ -6,4 +6,4 @@ You are reviewing the developer's code to see if they:
 
 If you find any problems within the program, please give proper feedback to the developer, including what the problem is and how it might be fixed.
 If you don't find any problems, please say nothing but the statement "No problems found."
-Do not try to optimize the code of they can work as intended
+Do not try to optimize the code if it can work as intended

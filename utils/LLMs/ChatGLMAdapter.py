@@ -1,3 +1,4 @@
+import torch
 import zhipuai
 from tenacity import retry, stop_after_attempt, wait_fixed
 from transformers import AutoTokenizer, AutoModel
@@ -11,7 +12,7 @@ class ZhipuModelsAdapter(LLMsAdapter):
         super().__init__(model_name)
         zhipuai.api_key = api_key
 
-    def completion(self, prompt, max_tokens=100, max_length=300, top_p=0.9, temperature=0.0):
+    def completion(self, prompt, max_length=300, top_p=0.9, temperature=0.0):
         raise NotImplementedError('ChatGLM series from ZhiPuAI does not support completion')
 
     @retry(stop=(stop_after_attempt(3)), wait=wait_fixed(2))
@@ -21,7 +22,7 @@ class ZhipuModelsAdapter(LLMsAdapter):
             prompt=prompt,
             top_p=top_p,
             temperature=temperature + 0.1,
-            max_length=max_length
+            max_tokens=max_length
         )
         try:
             self.update_token(response['data']['usage']['total_tokens'])
@@ -64,7 +65,7 @@ class CharGLMCharactor(Charactor):
             },
             prompt=prompt
         )
-        print(response)
+        # print(response)
         self.llm_adapter.update_token(response['data']['usage']['total_tokens'])
         return response['data']['choices'][0]['content']
 
@@ -72,14 +73,26 @@ class CharGLMCharactor(Charactor):
 class CodeGeeXAdapter(LLMsAdapter):
     def __init__(self):
         super().__init__("codegeex2-6b")
+        self.tokenizer = AutoTokenizer.from_pretrained("THUDM/codegeex2-6b", trust_remote_code=True)
+        self.model = AutoModel.from_pretrained("THUDM/codegeex2-6b", trust_remote_code=True).half().cuda()
 
-    def completion(self, prompt, max_tokens=100, max_length=300, top_p=0.9, temperature=0.0):
-        tokenizer = AutoTokenizer.from_pretrained("THUDM/codegeex2-6b", trust_remote_code=True)
-        model = AutoModel.from_pretrained("THUDM/codegeex2-6b", trust_remote_code=True).half().cuda()
-        inputs = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
-        outputs = model.generate(inputs, max_length=max_length, top_p=top_p, temperature=temperature)
-        self.update_token(tokenizer.vocab_size)
-        return tokenizer.decode(outputs[0])
+    def completion(self, prompt , max_length=300, top_p=0.9, temperature=0.0):
+        inputs = self.tokenizer.encode(prompt, return_tensors="pt").to(self.model.device)
 
-    def chat_completion(self, prompt, max_tokens=100):
+        pad_token_id = self.tokenizer.pad_token_id
+
+        attention_mask = torch.ones(inputs.shape, dtype=torch.long, device=self.model.device)
+
+        outputs = self.model.generate(inputs,
+                                      max_length=max_length + self.tokenizer.vocab_size,
+                                      attention_mask=attention_mask,
+                                      pad_token_id=pad_token_id,
+                                      top_p=top_p,
+                                      temperature=temperature+0.1,
+                                      do_sample=True)
+
+        self.update_token(self.tokenizer.vocab_size)
+        return self.tokenizer.decode(outputs[0])
+
+    def chat_completion(self, prompt, ):
         raise NotImplementedError("CodeGeeX does not support chat completion.")
