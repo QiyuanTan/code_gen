@@ -63,5 +63,5 @@ if __name__ == '__main__':
     glm4 = LocalLLMsAdapter('chatglm2-6b')
     # glm4 = ZhipuModelsAdapter('glm-4', api_key='0b4dfa49fd18b4b01a9bdaed106e1a8a.Hv5dwBnO1rp8k7P0')
 
-    generate_samples(glm4, problem_keys, "self_collab", self_collaboration, max_workers=5)
-    generate_samples(glm4, problem_keys, "dirct_chat", completion_for_chat_models, max_workers=5)
+    generate_samples(glm4, problem_keys, "self_plan", self_planning, max_workers=5)
+    generate_samples(glm4, problem_keys, "dirct_com[", completion_for_completion_models, max_workers=5)
