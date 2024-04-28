@@ -1,10 +1,12 @@
+# -*- coding = utf-8 -*-
+# @File: main
+
 from concurrent.futures import ThreadPoolExecutor, wait
 from datetime import datetime
 
 from human_eval.data import write_jsonl, read_problems
 from tqdm import tqdm
 
-from utils.LLMs.ChatGLMAdapter import ZhipuModelsAdapter
 from utils.LLMs.LocalLLMsAdapter import LocalLLMsAdapter
 from utils.implementation import *
 
@@ -43,7 +45,7 @@ def add_sample(samples, task_id, completion, model_adapter, pbar):
 
 
 def completion_for_completion_models(llm_adapter, prompt):
-    return crop_string(llm_adapter.completion(prompt))
+    return llm_adapter.completion(prompt)
 
 
 def completion_for_chat_models(llm_adapter: LLMsAdapter, prompt):

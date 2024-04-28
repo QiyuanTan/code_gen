@@ -1,10 +1,7 @@
 # -*- coding = utf-8 -*-
-# @Time : 2023/8/31 23:36
-# @Author: Tan Qiyuan
 # @File: implementation
 import ast
 import json
-import re
 
 from utils.LLMs.LLMsAdapter import LLMsAdapter, Charactor
 from utils.prompts.Prompter import Prompter
@@ -20,7 +17,6 @@ def crop_string(input_string):
 
 def extract_function_body(text: str):
     text = process_n(text)
-    # 在文本中找到所有可能的 Python 函数定义
     function_defs = []
     start = 0
     while True:
@@ -35,7 +31,6 @@ def extract_function_body(text: str):
                 index_return = s1
                 break
             s1 = index_return + 1
-        # 确定函数定义的结束位置
         end = text.find("\n", index_return)
         if end == -1:
             end = len(text)
@@ -45,7 +40,6 @@ def extract_function_body(text: str):
         start = end
 
     for function_def in function_defs:
-        # 使用 AST 解析 Python 代码
         try:
             tree = ast.parse(function_def)
         except:
