@@ -1,4 +1,4 @@
-# Self-Planning and Self-Collaboration Code Generation Framework
+# code_gen
 
 This project is an attempt to implement the self-planning code generation framework ([arXiv:2303.06689](https://arxiv.org/abs/2303.06689)) and the self-collaboration code generation framework ([arXiv:2304.07590](https://arxiv.org/abs/2304.07590)). These frameworks aim to improve the process of large language model (LLM) code generation. The program can generate samples that can be evaluated using Human-Eval.
 
