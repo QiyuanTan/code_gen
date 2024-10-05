@@ -11,22 +11,6 @@ from utils.LLMs import *
 
 problems = read_problems()
 
-"""
-This is a brief introduction to this project. This project is intended to create a implementation for the
-self-planning code generation framework (https://arxiv.org/abs/2303.06689) and the self-collaboration code 
-generation framework (https://arxiv.org/abs/2304.07590), two frameworks that aims to improve the process of 
-large language model (LLM) code generation. The program can generate samples that can be evaluated Human-Eval 
-using the the two frameworks and direct generation.
-
-It is important to note that this project does not provide an implementation for Human-Eval. to evaluate the
-generated samples you need to clone the repository of Human-Eval (https://github.com/openai/human-eval) and 
-setup it following its instructions.
-
-Also, the API keys were removed from this project for security reasons. If you want to reproduce the results,
-please use your own API keys.
-"""
-
-
 def generate_samples(model_adapter: LLMsAdapter, keys, experiment_name,
                      completion, num_samples_per_task=1, max_workers=5):
     """
@@ -79,7 +63,7 @@ def add_sample(samples, task_id, completion, model_adapter, pbar):
     """
     samples.append(dict(task_id=task_id,
                         completion=completion(prompt=problems[task_id]["prompt"],
-                                              llm_adapter=model_adapter)))
+                        llm_adapter=model_adapter)))
     pbar.update(1)
 
 
@@ -114,7 +98,10 @@ def completion_for_chat_models(llm_adapter: LLMsAdapter, prompt):
 
 if __name__ == '__main__':
     problem_keys = list(problems.keys())
-    glm4 = ZhipuModelsAdapter('glm-4', api_key='0b4dfa49fd18b4b01a9bdaed106e1a8a.Hv5dwBnO1rp8k7P0')
 
+    # Set up the models
+    glm4 = ZhipuModelsAdapter('glm-4', api_key='API_KEY')
+
+    # Generate samples
     generate_samples(glm4, problem_keys, "self_collaboration", self_collaboration, max_workers=1)
     generate_samples(glm4, problem_keys, "dirct_com", completion_for_completion_models, max_workers=5)
