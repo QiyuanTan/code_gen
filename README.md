@@ -13,7 +13,7 @@ The result can be found at ([https://drive.google.com/file/d/1LWIuQ_49iU9D5x20d2
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/your-repo-name.git
+    git clone https://github.com/QiyuanTan/code_gen.git
     cd code_gen
     ```
 
